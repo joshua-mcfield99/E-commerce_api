@@ -15,6 +15,37 @@ This project is an e-commerce application REST API built using Express, Node.js,
 - **Local Development**: Develop and test the application locally on your computer.
 - **API Documentation**: Document the API using Swagger.
 
+## Getting Started
+
+### Installation
+To get started with the project locally, follow these steps:
+
+1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-username/e-commerce-api.git
+    cd e-commerce-api
+    ```
+
+2. **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3. **Set up the PostgreSQL database**:
+   - Create a new PostgreSQL database.
+   - Configure your database connection in a `.env` file (based on the `.env.example`).
+
+4. **Run database migrations**:
+    ```bash
+    npx sequelize-cli db:migrate
+    ```
+
+5. **Start the server**:
+    ```bash
+    npm start
+    ```
+    The API should now be running on `http://localhost:3000`.
+
 ### API Documentation
 API documentation is provided using Swagger. To view the documentation:
 
