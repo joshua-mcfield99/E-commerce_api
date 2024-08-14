@@ -1,4 +1,4 @@
-# My E-commerce REST API
+# My e-commerce REST API portfolio project
 
 ## Overview
 This project is an e-commerce application REST API built using Express, Node.js, and PostgreSQL. E-commerce applications are crucial in the world of online business, providing the backbone for countless transactions across the internet. This API allows users to perform various CRUD operations such as registering an account, browsing products for sale, managing their carts, and placing orders.
