@@ -1,1 +1,1 @@
-![Database ERD (Entity-Relationship Diagram)](images\e-commerce_api_db.png)
+![Database ERD (Entity-Relationship Diagram)](./images/e-commerce_api_db.png)
