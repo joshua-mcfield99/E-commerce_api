@@ -1,0 +1,215 @@
+Detailed API Endpoints Plan
+1. User Management
+
+    POST /api/register
+        Description: Register a new user. The role is always set to "customer" by default.
+        Request Body: { first_name, last_name, email, password, phone }
+        Response: User object (excluding the password) or error message.
+        Security Consideration: The role is hardcoded as "customer" in the server logic, and the password is hashed before storing.
+
+    GET /api/users/
+        Description: Retrieve a specific user's information by ID. Accessible to authenticated users.
+        Params: id - User ID.
+        Response: User object.
+        Security Consideration: Ensure the user is authenticated and authorized to view the requested data.
+
+    PUT /api/users/
+        Description: Update a specific user's information by ID. The role cannot be changed by this endpoint unless an admin role is confirmed.
+        Params: id - User ID.
+        Request Body: Fields to update { first_name, last_name, email, phone } (role is excluded).
+        Response: Updated user object.
+        Security Consideration: Authentication required. Only the user's own data can be updated unless an admin is making the request.
+
+    DELETE /api/users/
+        Description: Delete a user by ID. Only admins can delete other users.
+        Params: id - User ID.
+        Response: Success or error message.
+        Security Consideration: Only users with an "admin" role can delete other users.
+
+2. Role Management (Admin-Only)
+
+    PUT /api/users/
+    /role
+        Description: Update a specific user's role. Only accessible to admins.
+        Params: id - User ID.
+        Request Body: { role } (can only be set to "customer" or "admin").
+        Response: Updated user object.
+        Security Consideration: Authentication required. Only users with an "admin" role can change another user's role. The role is validated to ensure it can only be set to "customer" or "admin".
+
+3. Product Management
+
+    POST /api/products
+        Description: Create a new product. Accessible only to admins.
+        Request Body: { name, description, price, stock, category_id }
+        Response: Product object or error message.
+        Security Consideration: Only users with an "admin" role can create products.
+
+    GET /api/products
+        Description: Retrieve a list of all products.
+        Query Params (optional): Pagination or filtering parameters.
+        Response: Array of product objects.
+        Security Consideration: Accessible to all users, no special security requirements.
+
+    GET /api/products/
+        Description: Retrieve a specific product by ID.
+        Params: id - Product ID.
+        Response: Product object.
+        Security Consideration: Accessible to all users, no special security requirements.
+
+    PUT /api/products/
+        Description: Update a specific product by ID. Accessible only to admins.
+        Params: id - Product ID.
+        Request Body: Fields to update { name, description, price, stock, category_id }
+        Response: Updated product object.
+        Security Consideration: Only users with an "admin" role can update products.
+
+    DELETE /api/products/
+        Description: Delete a product by ID. Accessible only to admins.
+        Params: id - Product ID.
+        Response: Success or error message.
+        Security Consideration: Only users with an "admin" role can delete products.
+
+4. Category Management
+
+    POST /api/categories
+        Description: Create a new category. Accessible only to admins.
+        Request Body: { category_name }
+        Response: Category object or error message.
+        Security Consideration: Only users with an "admin" role can create categories.
+
+    GET /api/categories
+        Description: Retrieve a list of all categories.
+        Response: Array of category objects.
+        Security Consideration: Accessible to all users, no special security requirements.
+
+    GET /api/categories/
+        Description: Retrieve a specific category by ID.
+        Params: id - Category ID.
+        Response: Category object.
+        Security Consideration: Accessible to all users, no special security requirements.
+
+    PUT /api/categories/
+        Description: Update a specific category by ID. Accessible only to admins.
+        Params: id - Category ID.
+        Request Body: Fields to update { category_name }
+        Response: Updated category object.
+        Security Consideration: Only users with an "admin" role can update categories.
+
+    DELETE /api/categories/
+        Description: Delete a category by ID. Accessible only to admins.
+        Params: id - Category ID.
+        Response: Success or error message.
+        Security Consideration: Only users with an "admin" role can delete categories.
+
+5. Order Management
+
+    POST /api/orders
+        Description: Place a new order.
+        Request Body: { user_id, total_price, total_items, payment_status, address_id, items: [{ product_id, quantity }] }
+        Response: Order object or error message.
+        Security Consideration: Authentication required. Only the authenticated user can place an order.
+
+    GET /api/orders
+        Description: Retrieve a list of all orders. Accessible only to admins.
+        Query Params (optional): Pagination, filtering by user, date range, etc.
+        Response: Array of order objects.
+        Security Consideration: Only users with an "admin" role can retrieve all orders.
+
+    GET /api/orders/
+        Description: Retrieve a specific order by ID. Accessible to the user who placed the order or admins.
+        Params: id - Order ID.
+        Response: Order object.
+        Security Consideration: Authentication required. Users can only access their own orders unless they are admins.
+
+    PUT /api/orders/
+        Description: Update an order status or details. Accessible only to admins.
+        Params: id - Order ID.
+        Request Body: Fields to update { payment_status, address_id }
+        Response: Updated order object.
+        Security Consideration: Only users with an "admin" role can update orders.
+
+    DELETE /api/orders/
+        Description: Cancel/delete an order by ID. Accessible only to admins.
+        Params: id - Order ID.
+        Response: Success or error message.
+        Security Consideration: Only users with an "admin" role can delete orders.
+
+6. Cart Management
+
+    POST /api/cart
+        Description: Create a cart for a user.
+        Request Body: { user_id }
+        Response: Cart object or error message.
+        Security Consideration: Authentication required. Only the authenticated user can create a cart.
+
+    GET /api/cart/
+        Description: Retrieve the cart for a specific user.
+        Params: user_id - User ID.
+        Response: Cart object with items.
+        Security Consideration: Authentication required. Users can only access their own cart.
+
+    POST /api/cart/
+    /items
+        Description: Add an item to the cart.
+        Params: cart_id - Cart ID.
+        Request Body: { product_id, quantity }
+        Response: Updated cart object.
+        Security Consideration: Authentication required. Only the authenticated user can modify their cart.
+
+    DELETE /api/cart/
+    /items/
+        Description: Remove an item from the cart.
+        Params: cart_id, item_id
+        Response: Success or error message.
+        Security Consideration: Authentication required. Only the authenticated user can modify their cart.
+
+7. Address Management
+
+    POST /api/addresses
+        Description: Create a new address for a user.
+        Request Body: { user_id, street, city, state, country, postal_code }
+        Response: Address object or error message.
+        Security Consideration: Authentication required. Users can only create addresses for themselves.
+
+    GET /api/addresses/
+        Description: Retrieve all addresses for a specific user.
+        Params: user_id - User ID.
+        Response: Array of address objects.
+        Security Consideration: Authentication required. Users can only access their own addresses.
+
+    PUT /api/addresses/
+        Description: Update a specific address by ID.
+        Params: id - Address ID.
+        Request Body: Fields to update { street, city, state, country, postal_code }
+        Response: Updated address object.
+        Security Consideration: Authentication required. Users can only update their own addresses.
+
+    DELETE /api/addresses/
+        Description: Delete a specific address by ID.
+        Params: id - Address ID.
+        Response: Success or error message.
+        Security Consideration: Authentication required. Users can only delete their own addresses.
+
+8. Authentication
+
+    POST /api/auth/register
+        Description: Register a new user. The role is always set to "customer" by default.
+        Request Body: { first_name, last_name, email, password, phone }
+        Response: Auth token and user object (excluding the password) or error message.
+        Security Consideration: The role is hardcoded to "customer" within the server logic. Passwords are hashed before storage.
+
+    POST /api/auth/login
+        Description: Log in a user.
+        Request Body: { email, password }
+        Response: Auth token and user object (excluding the password) or error message.
+        Security Consideration: Authenticate users securely and issue a JWT or similar token for subsequent requests.
+
+    POST /api/auth/logout
+        Description: Log out a user (invalidate the token).
+        Response: Success message.
+        Security Consideration: Ensure tokens are properly invalidated on logout.
+
+    GET /api/auth/me
+        Description: Get the authenticated user's profile.
+        Response: User object.
+        Security Consideration: Authentication required.
