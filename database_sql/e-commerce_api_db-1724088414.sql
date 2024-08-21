@@ -1,91 +1,77 @@
 CREATE TABLE IF NOT EXISTS "users" (
-	"user_id" serial NOT NULL UNIQUE,
+	"user_id" serial PRIMARY KEY,
 	"first_name" varchar(255) NOT NULL,
 	"last_name" varchar(255) NOT NULL,
 	"email" varchar(255) NOT NULL UNIQUE,
 	"password" varchar(255) NOT NULL,
-	"phone" varchar(255) NOT NULL,
+	"phone" varchar(20) NOT NULL,
 	"role" varchar(255) NOT NULL DEFAULT 'customer',
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp NOT NULL,
-	PRIMARY KEY ("user_id")
-);
-
-CREATE TABLE IF NOT EXISTS "products" (
-	"product_id" serial NOT NULL UNIQUE,
-	"name" varchar(255) NOT NULL,
-	"description" varchar(255) NOT NULL,
-	"price" numeric(10,2) NOT NULL,
-	"stock" bigint NOT NULL CHECK (stock >= 0),
-	"category_id" int NOT NULL,
-	PRIMARY KEY ("product_id")
+	"created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS "categories" (
-	"category_id" serial NOT NULL UNIQUE,
-	"category_name" varchar(255) NOT NULL,
-	PRIMARY KEY ("category_id")
+	"category_id" serial PRIMARY KEY,
+	"category_name" varchar(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "orders" (
-	"order_id" serial NOT NULL UNIQUE,
-	"user_id" int NOT NULL,
-	"order_date" timestamp NOT NULL,
-	"total_price" numeric(10,2) NOT NULL,
-	"total_items" int NOT NULL,
-	"payment_status" varchar(255) NOT NULL,
-	"address_id" int NOT NULL,
-	PRIMARY KEY ("order_id")
-);
-
-CREATE TABLE IF NOT EXISTS "order_items" (
-	"order_items_id" serial NOT NULL UNIQUE,
-	"order_id" int NOT NULL,
-	"product_id" int NOT NULL,
-	"quantity" int NOT NULL CHECK (quantity > 0),
-	"total_price" numeric(10,2) NOT NULL,
-	PRIMARY KEY ("order_items_id")
-);
-
-CREATE TABLE IF NOT EXISTS "cart" (
-	"cart_id" serial NOT NULL UNIQUE,
-	"user_id" int NOT NULL,
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp NOT NULL,
-	PRIMARY KEY ("cart_id")
-);
-
-CREATE TABLE IF NOT EXISTS "cart_items" (
-	"cart_item_id" serial NOT NULL UNIQUE,
-	"cart_id" int NOT NULL,
-	"product_id" int NOT NULL,
-	"quantity" int NOT NULL CHECK (quantity > 0),
-	"total_price" numeric(10,2) NOT NULL,
-	PRIMARY KEY ("cart_item_id")
+CREATE TABLE IF NOT EXISTS "products" (
+	"product_id" serial PRIMARY KEY,
+	"name" varchar(255) NOT NULL,
+	"description" text NOT NULL,
+	"price" numeric(10,2) NOT NULL CHECK (price >= 0),
+	"stock" bigint NOT NULL CHECK (stock >= 0),
+	"category_id" int NOT NULL,
+	FOREIGN KEY ("category_id") REFERENCES "categories"("category_id") ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS "addresses" (
-	"address_id" serial NOT NULL UNIQUE,
+	"address_id" serial PRIMARY KEY,
 	"street" varchar(255) NOT NULL,
 	"city" varchar(255) NOT NULL,
 	"state" varchar(255) NOT NULL,
 	"country" varchar(255) NOT NULL,
 	"postal_code" varchar(255) NOT NULL,
 	"user_id" int NOT NULL,
-	PRIMARY KEY ("address_id")
+	FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS "orders" (
+	"order_id" serial PRIMARY KEY,
+	"user_id" int NOT NULL,
+	"order_date" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"total_price" numeric(10,2) NOT NULL CHECK (total_price >= 0),
+	"total_items" int NOT NULL CHECK (total_items > 0),
+	"payment_status" varchar(255) NOT NULL,
+	"address_id" int NOT NULL,
+	FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE,
+	FOREIGN KEY ("address_id") REFERENCES "addresses"("address_id") ON DELETE SET NULL
+);
 
-ALTER TABLE "products" ADD CONSTRAINT "products_fk5" FOREIGN KEY ("category_id") REFERENCES "categories"("category_id");
+CREATE TABLE IF NOT EXISTS "order_items" (
+	"order_items_id" serial PRIMARY KEY,
+	"order_id" int NOT NULL,
+	"product_id" int NOT NULL,
+	"quantity" int NOT NULL CHECK (quantity > 0),
+	"total_price" numeric(10,2) NOT NULL CHECK (total_price >= 0),
+	FOREIGN KEY ("order_id") REFERENCES "orders"("order_id") ON DELETE CASCADE,
+	FOREIGN KEY ("product_id") REFERENCES "products"("product_id") ON DELETE SET NULL
+);
 
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS "cart" (
+	"cart_id" serial PRIMARY KEY,
+	"user_id" int NOT NULL,
+	"created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE
+);
 
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk6" FOREIGN KEY ("address_id") REFERENCES "addresses"("address_id");
-ALTER TABLE "order_items" ADD CONSTRAINT "order_items_fk1" FOREIGN KEY ("order_id") REFERENCES "orders"("order_id");
-
-ALTER TABLE "order_items" ADD CONSTRAINT "order_items_fk2" FOREIGN KEY ("product_id") REFERENCES "products"("product_id");
-ALTER TABLE "cart" ADD CONSTRAINT "cart_fk1" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE;
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_fk1" FOREIGN KEY ("cart_id") REFERENCES "cart"("cart_id");
-
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_fk2" FOREIGN KEY ("product_id") REFERENCES "products"("product_id");
-ALTER TABLE "addresses" ADD CONSTRAINT "addresses_fk6" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS "cart_items" (
+	"cart_item_id" serial PRIMARY KEY,
+	"cart_id" int NOT NULL,
+	"product_id" int NOT NULL,
+	"quantity" int NOT NULL CHECK (quantity > 0),
+	"total_price" numeric(10,2) NOT NULL CHECK (total_price >= 0),
+	FOREIGN KEY ("cart_id") REFERENCES "cart"("cart_id") ON DELETE CASCADE,
+	FOREIGN KEY ("product_id") REFERENCES "products"("product_id") ON DELETE SET NULL
+);
