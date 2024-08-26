@@ -2,7 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const pool = require('./database_sql/pool');
-
+const authRoutes = require('./routes/authRoutes');
 //Intialize app
 const app = express();
 
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Use the auth routes for handling registration
+// Use the auth routes for handling registration and login
 app.use('/api', authRoutes);
 
 /*
