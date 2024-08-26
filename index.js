@@ -9,6 +9,13 @@ const app = express();
 //Port
 const PORT = process.env.PORT || 3000;
 
+
+app.use(express.json());
+
+// Use the auth routes for handling registration
+app.use('/api', authRoutes);
+
+/*
 //Test basic route
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -24,6 +31,7 @@ app.get('/users', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+*/
 
 // Shutdown the pool on SIGTERM signal
 process.on('SIGTERM', () => {
