@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const pool = require('./database_sql/pool');
 const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
 //Intialize app
 const app = express();
 
