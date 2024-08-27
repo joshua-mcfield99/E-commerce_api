@@ -4,6 +4,10 @@ const express = require('express');
 const pool = require('./database_sql/pool');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const checkoutRoutes = require('./routes/checkoutRoutes');
+
 //Intialize app
 const app = express();
 
@@ -15,6 +19,18 @@ app.use(express.json());
 
 // Use the auth routes for handling registration and login
 app.use('/api', authRoutes);
+
+// Product routes
+app.use('/api', productRoutes);
+
+// User routes
+app.use('/api', userRoutes);
+
+// Cart routes
+app.use('/api', cartRoutes);
+
+// Checkout routes
+app.use('/api', checkoutRoutes);
 
 /*
 //Test basic route
