@@ -12,13 +12,14 @@ exports.createProduct = async (req, res) => {
         const result = await pool.query(
             `INSERT INTO products (name, description, price, stock, category_id)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING product_id, name, description, price, stock, category`,
+            RETURNING product_id, name, description, price, stock, category_id`,
             [name, description, price, stock, category_id]
         );
-
-        res.status(201),json(result.row[0]);
+        console.log(result.rows[0]);
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.log(err.message);
+        console.log(result.rows[0]);
         res.status(500).send('Server Error')
     }
 };

@@ -2,7 +2,7 @@ const pool = require('../database_sql/pool');
 const bcrypt = require('bcrypt');
 
 // Get all users excluding passwords (Admin only)
-exports.getAllusers = async (req, res) => {
+exports.getAllUsers = async (req, res) => {
     try {
         const result = await pool.query(
             'SELECT user_id, first_name, last_name, email, phone, role, created_at, updated_at FROM users'
@@ -70,7 +70,7 @@ exports.updateUserById = async (req, res) => {
                 email = $3,
                 phone = $4,
                 password = $5,
-                updated_at NOW()
+                updated_at = NOW()
             WHERE user_id = $6
             RETURNING user_id, first_name, last_name, email, phone, role, created_at, updated_at`,
             [

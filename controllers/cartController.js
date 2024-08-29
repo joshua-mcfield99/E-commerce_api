@@ -102,24 +102,32 @@ exports.addItemToCart = async (req, res) => {
     }
 };
 
-// Update the quantity of an item in the cart
 exports.updateCartItem = async (req, res) => {
     try {
         const { cart_item_id } = req.params;
         const { quantity } = req.body;
 
         if (quantity === undefined || quantity < 0) {
-            return res.status(400).json({message: 'Quantity must be a non-negative value!'});
+            return res.status(400).json({ message: 'Quantity must be a non-negative value!' });
         }
 
-        // Retieve the cart item
-        const cartItemResult = await pool.query('SELECT * FROM cart_items WHERE cart_item_id = $1', [cart_item_id]);
+        // Retrieve the cart item and join with the products table to get the price
+        const cartItemResult = await pool.query(
+            `SELECT ci.*, p.price 
+             FROM cart_items ci 
+             JOIN products p ON ci.product_id = p.product_id 
+             WHERE ci.cart_item_id = $1`,
+            [cart_item_id]
+        );
+
         if (cartItemResult.rows.length === 0) {
             return res.status(404).json({ message: 'Cart item not found' });
         }
 
+        const cartItem = cartItemResult.rows[0];
+
         if (quantity === 0) {
-            // If quantity is 0, remove the item from the cart
+            // If quantity is zero, remove the item from the cart
             const deleteResult = await pool.query(
                 'DELETE FROM cart_items WHERE cart_item_id = $1 RETURNING cart_item_id',
                 [cart_item_id]
@@ -129,23 +137,44 @@ exports.updateCartItem = async (req, res) => {
                 return res.status(404).json({ message: 'Cart item not found' });
             }
 
+            // Update the cart's updated_at timestamp
+            const cart_id = cartItem.cart_id;
+            await pool.query(
+                `UPDATE cart SET updated_at = NOW() WHERE cart_id = $1`,
+                [cart_id]
+            );
+
             return res.json({ message: 'Item removed from cart' });
         } else {
             // Otherwise, update the quantity and total price
-            const cartItem = cartItemResult.rows[0];
-            const newTotalPrice = cartItem.price * quantity;
+            const price = parseFloat(cartItem.price);
+
+            if (isNaN(price)) {
+                return res.status(500).json({ message: 'Invalid price value ' + cartItem.price });
+            }
+
+            const newTotalPrice = price * quantity;
 
             const updateResult = await pool.query(
-                `UPDATE cart_items SET quantity = $1, total_price = $2, updated_at = NOW()
-                 WHERE cart_item_id = $3 RETURNING cart_item_id, product_id, quantity, total_price`,
+                `UPDATE cart_items 
+                 SET quantity = $1, total_price = $2 
+                 WHERE cart_item_id = $3 
+                 RETURNING cart_item_id, product_id, quantity, total_price`,
                 [quantity, newTotalPrice, cart_item_id]
+            );
+
+            // Update the cart's updated_at timestamp
+            const cart_id = cartItem.cart_id;
+            await pool.query(
+                `UPDATE cart SET updated_at = NOW() WHERE cart_id = $1`,
+                [cart_id]
             );
 
             res.json(updateResult.rows[0]);
         }
     } catch (err) {
         console.log('Error updating cart item:', err);
-        res.status(500).json({message: 'Server error'});
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
