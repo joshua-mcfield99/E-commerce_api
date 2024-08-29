@@ -66,9 +66,55 @@ VALUES ('Admin', 'User', 'admin@example.com', '<hashed_password>', '1234567890',
 
 5. **Start the server**:
     ```bash
-    npm start
+    node index.js
     ```
     The API should now be running on `http://localhost:3000`.
+
+## Testing the API
+
+To ensure the API is functioning correctly, it's recommended to test the endpoints using Postman, a popular tool for testing APIs.
+
+### Example: Testing the Category Creation Endpoint
+
+1. **Install Postman**: If you haven't already, download and install Postman from [https://www.postman.com/downloads/](https://www.postman.com/downloads/).
+
+2. **Create a New POST Request**:
+   - **Method**: POST
+   - **URL**: `http://localhost:3000/api/categories`
+   - **Headers**: 
+     - `Authorization`: `Bearer <your_admin_jwt_token>`
+     - `Content-Type`: `application/json`
+   - **Body**: Select "raw" and choose "JSON" format. Use the following example JSON to create a category:
+     ```json
+     {
+       "category_name": "Electronics"
+     }
+     ```
+
+3. **Send the Request**:
+   - Click the "Send" button in Postman to execute the request.
+   - **Expected Response**: You should receive a `201 Created` status with the new category object in the response body:
+     ```json
+     {
+       "category_id": 1,
+       "category_name": "Electronics"
+     }
+     ```
+
+4. **Verify the Category**:
+   - You can verify that the category was created by sending a GET request to:
+     - **Method**: GET
+     - **URL**: `http://localhost:3000/api/categories`
+   - **Expected Response**: You should receive a `200 OK` status with a list of all categories, including the one you just created.
+
+### Additional Testing
+
+Feel free to use Postman to test other endpoints, such as user registration, product management, and order placement. The API documentation available at `http://localhost:3000/api-docs` provides detailed information on all available endpoints and how to use them.
+
+### Note
+
+Make sure your server is running and the database is properly configured before testing the endpoints. If you encounter any issues, refer to the console output for debugging information.
+
 
 
 ### API Documentation
