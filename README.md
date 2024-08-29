@@ -32,19 +32,22 @@ To get started with the project locally, follow these steps:
     ```
 
 3. **Set up the PostgreSQL database**:
-   - Create a new PostgreSQL database.
-   - Configure your database connection in a `.env` file (based on the `.env.example`).
+   - Open **Postbird** (a PostgreSQL client) on your computer.
+   - Connect to your PostgreSQL server.
+   - Create a new database. You can name it as per your preference or use the name suggested by the provided SQL file (e.g., `e-commerce_api_db`).
+   - Open the SQL file named `e-commerce_api_db-1724088414.sql` in Postbird.
+   - Execute the SQL script to create the necessary tables and populate the initial data.
 
-4. **Run database migrations**:
-    ```bash
-    npx sequelize-cli db:migrate
-    ```
+4. **Configure your database connection**:
+   - Create a `.env` file in the root of your project (you can base it on `.env.example`).
+   - Update the `.env` file with your PostgreSQL database connection details (use the name of the database you created with Postbird).
 
 5. **Start the server**:
     ```bash
     npm start
     ```
     The API should now be running on `http://localhost:3000`.
+
 
 ### API Documentation
 API documentation is provided using Swagger. To view the documentation:
