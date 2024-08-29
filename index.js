@@ -11,6 +11,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const checkoutRoutes = require('./routes/checkoutRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 
 //Intialize app
@@ -63,6 +64,9 @@ app.use('/api', orderRoutes);
 
 //Address routes
 app.use('/api', addressRoutes);
+
+//Category routes
+app.use('/api', categoryRoutes);
 
 /*
 //Test basic route
