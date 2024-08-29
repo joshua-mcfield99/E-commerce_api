@@ -59,7 +59,7 @@ To get started with the project locally, follow these steps:
 ```sql
 INSERT INTO users (first_name, last_name, email, password, phone, role, created_at, updated_at)
 VALUES ('Admin', 'User', 'admin@example.com', '<hashed_password>', '1234567890', 'admin', NOW(), NOW());
-
+```
 4. **Configure your database connection**:
    - Create a `.env` file in the root of your project (you can base it on `.env.example`).
    - Update the `.env` file with your PostgreSQL database connection details (use the name of the database you created with Postbird).
