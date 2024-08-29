@@ -10,6 +10,8 @@ const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const checkoutRoutes = require('./routes/checkoutRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const addressRoutes = require('./routes/addressRoutes');
+
 
 //Intialize app
 const app = express();
@@ -58,6 +60,9 @@ app.use('/api', checkoutRoutes);
 
 // Order routes
 app.use('/api', orderRoutes);
+
+//Address routes
+app.use('/api', addressRoutes);
 
 /*
 //Test basic route

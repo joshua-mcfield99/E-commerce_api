@@ -31,12 +31,34 @@ To get started with the project locally, follow these steps:
     npm install
     ```
 
+### Installation
+To get started with the project locally, follow these steps:
+
+1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-username/e-commerce-api.git
+    cd e-commerce-api
+    ```
+
+2. **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
 3. **Set up the PostgreSQL database**:
    - Open **Postbird** (a PostgreSQL client) on your computer.
    - Connect to your PostgreSQL server.
    - Create a new database. You can name it as per your preference or use the name suggested by the provided SQL file (e.g., `e-commerce_api_db`).
    - Open the SQL file named `e-commerce_api_db-1724088414.sql` in Postbird.
    - Execute the SQL script to create the necessary tables and populate the initial data.
+   - **Note**:
+     - After setting up the database, you will need to manually add categories related to the products you intend to sell. Categories are essential for organizing products and ensuring a smooth browsing experience for users. You can add categories directly via the API or by inserting them into the `categories` table using Postbird.
+     - Additionally, create an initial admin user by inserting a record into the `users` table. This user will have the role set to `admin` and can manage the application.
+
+#### Example SQL to Create an Admin User:
+```sql
+INSERT INTO users (first_name, last_name, email, password, phone, role, created_at, updated_at)
+VALUES ('Admin', 'User', 'admin@example.com', '<hashed_password>', '1234567890', 'admin', NOW(), NOW());
 
 4. **Configure your database connection**:
    - Create a `.env` file in the root of your project (you can base it on `.env.example`).
@@ -63,6 +85,7 @@ This will provide you with an interactive interface to explore and test the API 
 - **Shopping Cart**: Users can add items to their cart, update quantities, and remove items.
 - **Order Placement and Management**: Users can place orders and manage them.
 - **User Profile Management**: CRUD operations for managing user information.
+- **Address Management**: Users can add addresses to their profile, which will be associated with their user account.
 
 ## Entity-Relationship Diagram (ERD)
 Below is the ERD that represents the structure of the database for the e-commerce application:
