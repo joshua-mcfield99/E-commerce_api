@@ -115,7 +115,33 @@ Feel free to use Postman to test other endpoints, such as user registration, pro
 
 Make sure your server is running and the database is properly configured before testing the endpoints. If you encounter any issues, refer to the console output for debugging information.
 
+## Troubleshooting
 
+If you encounter issues during setup or while running the API, here are some common problems and solutions:
+
+### 1. Database Connection Error
+- **Symptom**: The server fails to start, or you receive an error related to the database connection.
+- **Solution**: Double-check your `.env` file to ensure all PostgreSQL connection details are correct (host, port, database name, username, and password). Ensure your PostgreSQL server is running and accessible.
+
+### 2. Migrations Fail or Database Errors
+- **Symptom**: Errors during database migrations or when executing SQL scripts.
+- **Solution**: Ensure the SQL script provided is executed correctly in Postbird, and there are no syntax errors. If using migrations, ensure all necessary migration files are in place and executed in the correct order.
+
+### 3. Server Crashes or Fails to Start
+- **Symptom**: The server crashes immediately after starting, or you receive errors in the terminal.
+- **Solution**: Check for missing environment variables, syntax errors in your code, or missing dependencies. Running `npm install` again might help if dependencies are missing.
+
+### 4. JWT Authentication Errors
+- **Symptom**: Authorization failures when accessing protected routes.
+- **Solution**: Ensure the JWT token is being sent correctly in the `Authorization` header as `Bearer <token>`. Verify that the token is valid and not expired. Use [jwt.io](https://jwt.io/) to decode and verify the token contents.
+
+### 5. Invalid SQL Queries
+- **Symptom**: Errors when performing CRUD operations (e.g., creating, updating, or deleting records).
+- **Solution**: Review the SQL queries in your controllers to ensure they match your database schema. Ensure that the data types and constraints in your queries align with your database schema.
+
+### 6. Testing Issues with Postman
+- **Symptom**: Unexpected results or errors when testing with Postman.
+- **Solution**: Ensure that the correct HTTP method, URL, headers, and body are being used in Postman. Double-check that the server is running and the API endpoint is correct.
 
 ### API Documentation
 API documentation is provided using Swagger. To view the documentation:
