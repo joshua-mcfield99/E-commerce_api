@@ -1,186 +1,168 @@
-# My e-commerce REST API portfolio project
+# My E-commerce REST API Portfolio Project
 
 ## Overview
-This project is an e-commerce application REST API built using Express, Node.js, and PostgreSQL. E-commerce applications are crucial in the world of online business, providing the backbone for countless transactions across the internet. This API allows users to perform various CRUD operations such as registering an account, browsing products for sale, managing their carts, and placing orders.
+This project is a fully functional e-commerce application REST API built using **Express**, **Node.js**, and **PostgreSQL**. It allows users to register, log in (both via email/password and Google OAuth), browse products, manage shopping carts, place orders, and reset passwords via email. The API supports full CRUD operations on products, users, carts, and orders.
 
 ## Project Objectives
-- **Build a functioning e-commerce REST API** using Express, Node.js, and PostgreSQL.
-- **User Authentication**: Allow users to register and log in via the API.
-- **Product Management**: Allow CRUD operations on products.
-- **User Account Management**: Allow CRUD operations on user accounts.
-- **Cart Management**: Allow CRUD operations on user carts.
-- **Order Management**: Allow users to place orders and perform CRUD operations on orders.
-- **Version Control**: Use Git for version control.
-- **Command Line**: Develop and manage the application via the command line.
-- **Local Development**: Develop and test the application locally on your computer.
-- **API Documentation**: Document the API using Swagger.
+- **User Authentication**: Register, log in, and reset passwords via email.
+- **Product Management**: Full CRUD operations on product listings.
+- **User Account Management**: Manage user profiles and account details.
+- **Cart Management**: Add, update, and remove items from shopping carts.
+- **Order Management**: Users can place and manage orders.
+- **OAuth Integration**: Log in with Google using Passport.js.
+- **Password Reset**: Users can reset their passwords via a link sent to their email.
+- **API Documentation**: Documented with Swagger for easy testing and exploration.
 
 ## Getting Started
 
 ### Installation
-To get started with the project locally, follow these steps:
+
+To run the project locally, follow these steps:
 
 1. **Clone the repository**:
+
     ```bash
     git clone https://github.com/your-username/e-commerce-api.git
     cd e-commerce-api
     ```
 
 2. **Install dependencies**:
-    ```bash
-    npm install
-    ```
 
-### Installation
-To get started with the project locally, follow these steps:
-
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/e-commerce-api.git
-    cd e-commerce-api
-    ```
-
-2. **Install dependencies**:
     ```bash
     npm install
     ```
 
 3. **Set up the PostgreSQL database**:
-   - Open **Postbird** (a PostgreSQL client) on your computer.
-   - Connect to your PostgreSQL server.
-   - Create a new database. You can name it as per your preference or use the name suggested by the provided SQL file (e.g., `e-commerce_api_db`).
-   - Open the SQL file named `e-commerce_api_db-1724088414.sql` in Postbird.
-   - Execute the SQL script to create the necessary tables and populate the initial data.
-   - **Note**:
-     - After setting up the database, you will need to manually add categories related to the products you intend to sell. Categories are essential for organizing products and ensuring a smooth browsing experience for users. You can add categories directly via the API or by inserting them into the `categories` table using Postbird.
-     - Additionally, create an initial admin user by inserting a record into the `users` table. This user will have the role set to `admin` and can manage the application.
+    - Use **Postbird** or any PostgreSQL client to create a new database (e.g., `e-commerce_api_db`).
+    - Open the SQL file `e-commerce_api_db-1724088414.sql` to create tables and seed initial data.
+    - You will need to manually add product categories or an admin user.
 
 #### Example SQL to Create an Admin User:
-```sql
-INSERT INTO users (first_name, last_name, email, password, phone, role, created_at, updated_at)
-VALUES ('Admin', 'User', 'admin@example.com', '<hashed_password>', '1234567890', 'admin', NOW(), NOW());
-```
-4. **Configure your database connection**:
-   - Create a `.env` file in the root of your project (you can base it on `.env.example`).
-   - Update the `.env` file with your PostgreSQL database connection details (use the name of the database you created with Postbird).
+
+    ```sql
+    INSERT INTO users (first_name, last_name, email, password, phone, role, created_at, updated_at)
+    VALUES ('Admin', 'User', 'admin@example.com', '<hashed_password>', '1234567890', 'admin', NOW(), NOW());
+    ```
+
+4. **Configure environment variables**:
+    - Copy `.env.example` to `.env` and configure the necessary values (PostgreSQL details, JWT secrets, Google OAuth credentials, and email service details).
 
 5. **Start the server**:
+
     ```bash
     node index.js
     ```
-    The API should now be running on `http://localhost:3000`.
+
+The API should now be running on `http://localhost:3001`.
 
 ## Testing the API
 
-To ensure the API is functioning correctly, it's recommended to test the endpoints using Postman, a popular tool for testing APIs.
+You can use **Postman** or **cURL** to test the API endpoints. The API documentation is available using Swagger at `http://localhost:3001/api-docs`.
 
 ### Example: Testing the Category Creation Endpoint
 
-1. **Install Postman**: If you haven't already, download and install Postman from [https://www.postman.com/downloads/](https://www.postman.com/downloads/).
+1. **Create a New POST Request**:
+    - **Method**: POST
+    - **URL**: `http://localhost:3001/api/categories`
+    - **Headers**:
+        - Authorization: `Bearer <your_admin_jwt_token>`
+        - Content-Type: `application/json`
+    - **Body**:
 
-2. **Create a New POST Request**:
-   - **Method**: POST
-   - **URL**: `http://localhost:3000/api/categories`
-   - **Headers**: 
-     - `Authorization`: `Bearer <your_admin_jwt_token>`
-     - `Content-Type`: `application/json`
-   - **Body**: Select "raw" and choose "JSON" format. Use the following example JSON to create a category:
-     ```json
-     {
-       "category_name": "Electronics"
-     }
-     ```
+    ```json
+    {
+      "category_name": "Electronics"
+    }
+    ```
 
-3. **Send the Request**:
-   - Click the "Send" button in Postman to execute the request.
-   - **Expected Response**: You should receive a `201 Created` status with the new category object in the response body:
-     ```json
-     {
-       "category_id": 1,
-       "category_name": "Electronics"
-     }
-     ```
+2. **Expected Response**: You should receive a `201 Created` response with the new category:
 
-4. **Verify the Category**:
-   - You can verify that the category was created by sending a GET request to:
-     - **Method**: GET
-     - **URL**: `http://localhost:3000/api/categories`
-   - **Expected Response**: You should receive a `200 OK` status with a list of all categories, including the one you just created.
+    ```json
+    {
+      "category_id": 1,
+      "category_name": "Electronics"
+    }
+    ```
 
-### Additional Testing
+3. **Verify the Category**:
+    - Send a **GET** request to `http://localhost:3001/api/categories` to list all categories.
 
-Feel free to use Postman to test other endpoints, such as user registration, product management, and order placement. The API documentation available at `http://localhost:3000/api-docs` provides detailed information on all available endpoints and how to use them.
+## Key Endpoints
 
-### Note
+### User Authentication
+- **POST** `/api/auth/register`: Register a new user.
+- **POST** `/api/auth/login`: Log in a user.
+- **GET** `/api/auth/google`: Google OAuth login.
+- **POST** `/api/auth/password-reset-request`: Request a password reset link.
+- **POST** `/api/auth/reset-password`: Reset a user's password.
 
-Make sure your server is running and the database is properly configured before testing the endpoints. If you encounter any issues, refer to the console output for debugging information.
+### Products
+- **GET** `/api/products`: List all products.
+- **POST** `/api/products`: Create a new product (admin only).
+- **PUT** `/api/products/:id`: Update a product (admin only).
+- **DELETE** `/api/products/:id`: Delete a product (admin only).
+
+### Cart
+- **POST** `/api/cart`: Add a product to the user's cart.
+- **GET** `/api/cart`: Retrieve the user's cart.
+- **PUT** `/api/cart/:productId`: Update the quantity of a product in the cart.
+- **DELETE** `/api/cart/:productId`: Remove a product from the cart.
+
+### Orders
+- **POST** `/api/orders`: Place an order.
+- **GET** `/api/orders`: Retrieve the user's orders.
+- **GET** `/api/orders/:id`: Get details of a specific order.
+
+### User Profile
+- **GET** `/api/users/me`: Retrieve the user's profile.
+- **PUT** `/api/users/me`: Update the user's profile.
+
+## API Documentation
+
+API documentation is available via **Swagger** at `http://localhost:3001/api-docs`. This interface allows you to explore and test the API interactively.
+
+## Environment Variables (.env)
+
+Ensure the .env is configured check .env.example 
 
 ## Troubleshooting
 
-If you encounter issues during setup or while running the API, here are some common problems and solutions:
+### Common Errors
 
-### 1. Database Connection Error
-- **Symptom**: The server fails to start, or you receive an error related to the database connection.
-- **Solution**: Double-check your `.env` file to ensure all PostgreSQL connection details are correct (host, port, database name, username, and password). Ensure your PostgreSQL server is running and accessible.
-
-### 2. Migrations Fail or Database Errors
-- **Symptom**: Errors during database migrations or when executing SQL scripts.
-- **Solution**: Ensure the SQL script provided is executed correctly in Postbird, and there are no syntax errors. If using migrations, ensure all necessary migration files are in place and executed in the correct order.
-
-### 3. Server Crashes or Fails to Start
-- **Symptom**: The server crashes immediately after starting, or you receive errors in the terminal.
-- **Solution**: Check for missing environment variables, syntax errors in your code, or missing dependencies. Running `npm install` again might help if dependencies are missing.
-
-### 4. JWT Authentication Errors
-- **Symptom**: Authorization failures when accessing protected routes.
-- **Solution**: Ensure the JWT token is being sent correctly in the `Authorization` header as `Bearer <token>`. Verify that the token is valid and not expired. Use [jwt.io](https://jwt.io/) to decode and verify the token contents.
-
-### 5. Invalid SQL Queries
-- **Symptom**: Errors when performing CRUD operations (e.g., creating, updating, or deleting records).
-- **Solution**: Review the SQL queries in your controllers to ensure they match your database schema. Ensure that the data types and constraints in your queries align with your database schema.
-
-### 6. Testing Issues with Postman
-- **Symptom**: Unexpected results or errors when testing with Postman.
-- **Solution**: Ensure that the correct HTTP method, URL, headers, and body are being used in Postman. Double-check that the server is running and the API endpoint is correct.
-
-### API Documentation
-API documentation is provided using Swagger. To view the documentation:
-
-1. Ensure the server is running.
-2. Open your web browser and navigate to `http://localhost:3000/api-docs`.
-
-This will provide you with an interactive interface to explore and test the API endpoints.
+- **Database Connection Issues**: Ensure the PostgreSQL server is running and check `.env` file details.
+- **Invalid JWT Token**: Make sure the token is in the `Authorization` header with `Bearer <token>`.
+- **OAuth Issues**: Check Google OAuth credentials and the `.env` configuration.
+- **Email Issues**: If password reset emails aren't sent, verify the Gmail SMTP settings in `.env`.
 
 ## Features
-- **User Registration and Authentication**: Users can create accounts and log in securely.
-- **Product Browsing and Management**: CRUD operations for managing product listings.
-- **Shopping Cart**: Users can add items to their cart, update quantities, and remove items.
-- **Order Placement and Management**: Users can place orders and manage them.
-- **User Profile Management**: CRUD operations for managing user information.
-- **Address Management**: Users can add addresses to their profile, which will be associated with their user account.
 
-## Entity-Relationship Diagram (ERD)
-Below is the ERD that represents the structure of the database for the e-commerce application:
-
-![Database ERD (Entity-Relationship Diagram)](./images/e-commerce_api_db.png)
+- **User Registration and Authentication**: Secure account management via email and Google OAuth.
+- **Product Management**: Full CRUD operations on products.
+- **Shopping Cart**: Add, update, and remove products in a shopping cart.
+- **Order Placement**: Place orders and retrieve order details.
+- **User Profile Management**: Manage personal details and account information.
+- **Password Reset**: Users can reset their password via an email link.
 
 ## Technologies Used
-- **Node.js**: JavaScript runtime environment for server-side development.
-- **Express.js**: Web framework for building the REST API.
-- **PostgreSQL**: Relational database management system.
-- **Sequelize**: ORM for database management and migrations.
-- **Swagger**: API documentation tool.
-- **Git**: Version control system.
+
+- **Node.js**: Server-side JavaScript runtime.
+- **Express**: Web framework for building APIs.
+- **PostgreSQL**: Relational database for data storage.
+- **Passport.js**: OAuth and JWT-based authentication.
+- **Nodemailer**: Service for sending password reset emails.
+- **Swagger**: API documentation and testing interface.
+- **Bcrypt**: Password hashing.
+- **JSON Web Token (JWT)**: Authentication and authorization.
 
 ## Development Process
-This project was developed using a local development environment. Key development practices include:
 
-- **Version Control**: Git was used for version control with a focus on feature branches and regular commits.
-- **Testing**: The API was tested locally using tools like Postman and automated tests.
-- **Documentation**: Swagger was used to document the API for ease of use and reference.
+- **Version Control**: Managed using Git with feature branches and regular commits.
+- **Testing**: Tested locally with Postman and Swagger.
+- **Documentation**: Created with Swagger for API exploration.
 
 ## Contact
-If you have any questions or feedback, feel free to reach out:
 
-- **Email**: joshua.mclelland2@yahoo.com
+For questions or feedback, feel free to reach out:
+
+- **Email**: [joshua.mclelland2@yahoo.com](mailto:joshua.mclelland2@yahoo.com)
 - **GitHub**: [joshua-mcfield99](https://github.com/joshua-mcfield99)
