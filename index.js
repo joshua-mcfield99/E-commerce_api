@@ -1,8 +1,12 @@
 // Imports
 require('dotenv').config();
+require('./config/passportConfig');
 const express = require('express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const passport = require('passport');
+const session = require('express-session');
+const cors = require('cors');
 const pool = require('./database_sql/pool');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -17,11 +21,30 @@ const categoryRoutes = require('./routes/categoryRoutes');
 //Intialize app
 const app = express();
 
+// Session middleware for maintaining login sessions
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+}));
+  
+// Initialize Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 //Port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 
 app.use(express.json());
+
+
+// Enable CORS for all routes
+app.use(cors({
+    origin: 'http://localhost:3000',  // Allow requests from this origin
+    methods: 'GET,POST,PUT,DELETE',    // Allow these HTTP methods
+    credentials: true                  // Allow cookies and authentication headers if necessary
+}));
 
 // Swagger configuration
 const swaggerOptions = {
@@ -34,7 +57,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:3000',
+                url: 'http://localhost:3001',
             },
         ],
     },
@@ -45,28 +68,28 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Use the auth routes for handling registration and login
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Product routes
-app.use('/api', productRoutes);
+app.use('/api/products', productRoutes);
 
 // User routes
-app.use('/api', userRoutes);
+app.use('/api/users', userRoutes);
 
 // Cart routes
-app.use('/api', cartRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Checkout routes
-app.use('/api', checkoutRoutes);
+app.use('/api/checkout', checkoutRoutes);
 
 // Order routes
-app.use('/api', orderRoutes);
+app.use('/api/orders', orderRoutes);
 
-//Address routes
-app.use('/api', addressRoutes);
+// Address routes
+app.use('/api/address', addressRoutes);
 
-//Category routes
-app.use('/api', categoryRoutes);
+// Category routes
+app.use('/api/categories', categoryRoutes);
 
 /*
 //Test basic route

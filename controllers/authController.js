@@ -2,38 +2,31 @@ const pool = require('../database_sql/pool');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
 // Register user
 exports.registerUser = async (req, res) => {
     try {
-        const {first_name, last_name, email, password, phone} = req.body;
+        const { first_name, last_name, email, password, phone } = req.body;
 
-        // Validate request body
         if (!first_name || !last_name || !email || !password || !phone) {
-            return res.status(400).json({message: 'All fields required!'});
+            return res.status(400).json({ message: 'All fields required!' });
         }
 
-        // Check user exists
         const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (userExists.rows.length > 0) {
-            return res.status(400).json({message: 'User already exists!'});
+            return res.status(400).json({ message: 'User already exists!' });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Add user to db, role is always set to 'customer' on registration
         const result = await pool.query(
             `INSERT INTO users (first_name, last_name, email, password, phone, role, created_at, updated_at)
-            VALUES ($1,$2, $3, $4, $5, 'customer', NOW(), NOW())
-            RETURNING user_id, first_name, last_name, email, phone, role, created_at, updated_at`,
+             VALUES ($1, $2, $3, $4, $5, 'customer', NOW(), NOW())
+             RETURNING user_id, first_name, last_name, email, phone, role, created_at, updated_at`,
             [first_name, last_name, email, hashedPassword, phone]
         );
 
         res.status(201).json(result.rows[0]);
-
     } catch (err) {
-        console.error(err.message);
         res.status(500).send('Server Error');
     }
 };
@@ -41,36 +34,30 @@ exports.registerUser = async (req, res) => {
 // Login user
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password} = req.body;
+        const { email, password } = req.body;
 
-        // Validate request body
         if (!email || !password) {
-            return res.status(400).json({message: 'Email and password required!'});
+            return res.status(400).json({ message: 'Email and password required!' });
         }
 
-        // Check user exists
         const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         const user = userResult.rows[0];
 
         if (!user) {
-            return res.status(401).json({message: 'Invalid credentials!'});
+            return res.status(404).json({ message: 'Account does not exist. Please sign up.' });
         }
 
-        // Valdiate password
         const isMatch = await bcrypt.compare(password, user.password);
-
         if (!isMatch) {
-            return res.status(401).json({message: 'Invalid  credentials'});
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate token
         const token = jwt.sign(
             { user_id: user.user_id, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: '1h'}
+            { expiresIn: '1h' }
         );
 
-        // Send token and user info in the response (Excluding password)
         res.json({
             token,
             user: {
@@ -84,9 +71,35 @@ exports.loginUser = async (req, res) => {
                 updated_at: user.updated_at,
             }
         });
-
     } catch (err) {
-        console.log(err.message);
-        res.status(500).send('Server Error')
+        res.status(500).send('Server Error');
+    }
+};
+
+// Reset password
+exports.resetPassword = async (req, res) => {
+    const { token, password } = req.body;
+
+    try {
+        const userResult = await pool.query(
+            'SELECT * FROM users WHERE reset_password_token = $1 AND reset_password_expires > NOW()',
+            [token]
+        );
+        const user = userResult.rows[0];
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await pool.query(
+            'UPDATE users SET password = $1, reset_password_token = NULL, reset_password_expires = NULL WHERE user_id = $2',
+            [hashedPassword, user.user_id]
+        );
+
+        res.status(200).json({ message: 'Password has been reset successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error resetting password' });
     }
 };
