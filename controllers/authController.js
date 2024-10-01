@@ -32,6 +32,7 @@ exports.registerUser = async (req, res) => {
 };
 
 // Login user
+/* Passport now acheives this
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -75,6 +76,7 @@ exports.loginUser = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+*/
 
 // Reset password
 exports.resetPassword = async (req, res) => {

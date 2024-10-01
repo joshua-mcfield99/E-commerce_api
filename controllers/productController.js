@@ -24,15 +24,19 @@ exports.createProduct = async (req, res) => {
     }
 };
 
-// Get all products, optional filtering by category
+// Get all products, optional filtering by category name
 exports.getProducts = async (req, res) => {
     try {
         const { category } = req.query;
-        let query = 'SELECT * FROM products';
+        let query = `
+            SELECT products.*, categories.category_name 
+            FROM products 
+            JOIN categories ON products.category_id = categories.category_id
+        `;
         let params = [];
 
         if (category) {
-            query += ' WHERE category_id = $1';
+            query += ' WHERE categories.category_name = $1';
             params.push(category);
         }
 
@@ -70,7 +74,7 @@ exports.updateProduct = async (req, res) => {
 
         const result = await pool.query(
             `UPDATE products SET name = $1, description = $2, price = $3, stock = $4, category_id = $5, updated_at = NOW()
-            WHERE product-id = $6
+            WHERE product_id = $6
             RETURNING product_id, name, description, price, stock, category_id`,
             [name, description, price, stock, category_id]
         );

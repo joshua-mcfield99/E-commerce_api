@@ -6,6 +6,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const passport = require('passport');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const pool = require('./database_sql/pool');
 const authRoutes = require('./routes/authRoutes');
@@ -17,34 +18,43 @@ const orderRoutes = require('./routes/orderRoutes');
 const addressRoutes = require('./routes/addressRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 
-
-//Intialize app
+// Initialize app
 const app = express();
+
+// Enable CORS for all routes before any other middleware
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true
+}));
+
+// Handle preflight requests for all routes
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.sendStatus(204); // No content, just acknowledge the preflight request
+});
 
 // Session middleware for maintaining login sessions
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
 }));
-  
+
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Port
+// Port
 const PORT = process.env.PORT || 3001;
 
-
-app.use(express.json());
-
-
-// Enable CORS for all routes
-app.use(cors({
-    origin: 'http://localhost:3000',  // Allow requests from this origin
-    methods: 'GET,POST,PUT,DELETE',    // Allow these HTTP methods
-    credentials: true                  // Allow cookies and authentication headers if necessary
-}));
+// Required for parsing POST requests
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Swagger configuration
 const swaggerOptions = {
@@ -92,7 +102,7 @@ app.use('/api/address', addressRoutes);
 app.use('/api/categories', categoryRoutes);
 
 /*
-//Test basic route
+// Test basic route
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
@@ -116,7 +126,7 @@ process.on('SIGTERM', () => {
     });
 });
 
-//Listen
+// Listen
 app.listen(PORT, () => {
-    console.log(`App is listening on port ${PORT}.`)
+    console.log(`App is listening on port ${PORT}.`);
 });

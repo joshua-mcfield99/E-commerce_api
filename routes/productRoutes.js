@@ -43,7 +43,7 @@ const router = express.Router();
  *       403:
  *         description: Access denied.
  */
-router.post('/products', authenticateToken, checkAdminRole, createProduct);
+router.post('/', authenticateToken, checkAdminRole, createProduct);
 
 // Get all products, optional filtering by category
 /**
@@ -57,7 +57,7 @@ router.post('/products', authenticateToken, checkAdminRole, createProduct);
  *       200:
  *         description: A list of products.
  */
-router.get('/products', getProducts);
+router.get('/', getProducts);
 
 // Get a single product by ID
 /**
@@ -80,7 +80,7 @@ router.get('/products', getProducts);
  *       404:
  *         description: Product not found.
  */
-router.get('/products/:productId', getProductById);
+router.get('/:productId', getProductById);
 
 // Update a product by ID (Admin only)
 /**
@@ -123,7 +123,7 @@ router.get('/products/:productId', getProductById);
  *       404:
  *         description: Product not found.
  */
-router.put('/products/:productId', authenticateToken, checkAdminRole, updateProduct);
+router.put('/:productId', authenticateToken, checkAdminRole, updateProduct);
 
 // Delete a product by ID (Admin only)
 /**
@@ -149,6 +149,6 @@ router.put('/products/:productId', authenticateToken, checkAdminRole, updateProd
  *       404:
  *         description: Product not found.
  */
-router.delete('/products/:productId', authenticateToken, checkAdminRole, deleteProduct);
+router.delete('/:productId', authenticateToken, checkAdminRole, deleteProduct);
 
 module.exports = router;

@@ -64,7 +64,34 @@ router.post('/register', registerUser);
  *       404:
  *         description: User does not exist.
  */
-router.post('/login', loginUser);
+
+// Login route using Passport for local strategy
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        // If there was an error during authentication
+        if (err) {
+            return res.status(500).json({ message: 'Server error. Please try again later.' });
+        }
+
+        // If authentication fails (e.g., wrong credentials or no user found)
+        if (!user) {
+            return res.status(401).json({ message: info ? info.message : 'Login failed. Invalid credentials.' });
+        }
+
+        // Manually log the user in
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error logging in. Please try again later.' });
+            }
+
+            // Send a success response along with the authenticated user
+            return res.status(200).json({
+                message: 'Login successful',
+                user: req.user, // Send user details back if necessary
+            });
+        });
+    })(req, res, next);  // Pass the request, response, and next to the middleware
+});
 
 /**
  * @swagger
@@ -170,5 +197,35 @@ router.post('/password-reset-request', async (req, res) => {
  *         description: Server error.
  */
 router.post('/reset-password', resetPassword);
+
+router.get('/profile', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+
+    // If user is authenticated, return the user profile
+    res.json({
+        user: req.user  // Contains user details
+    });
+});
+
+// Logout user and destroy session
+router.get('/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error logging out. Please try again later.' });
+        }
+        
+        // Clear session cookie or any relevant data
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error ending session. Please try again later.' });
+            }
+
+            // Send response confirming logout
+            res.status(200).json({ message: 'Logout successful' });
+        });
+    });
+});
 
 module.exports = router;
