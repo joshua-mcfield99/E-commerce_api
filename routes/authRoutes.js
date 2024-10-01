@@ -198,7 +198,7 @@ router.post('/password-reset-request', async (req, res) => {
  */
 router.post('/reset-password', resetPassword);
 
-router.get('/profile', (req, res) => {
+/*router.get('/profile', (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/login');
     }
@@ -207,7 +207,38 @@ router.get('/profile', (req, res) => {
     res.json({
         user: req.user  // Contains user details
     });
-});
+});*/
+
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   get:
+ *     summary: Logout the user and destroy session
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Logout successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logout successful
+ *       500:
+ *         description: Error logging out or ending session.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error logging out. Please try again later.
+ */
 
 // Logout user and destroy session
 router.get('/logout', (req, res) => {
