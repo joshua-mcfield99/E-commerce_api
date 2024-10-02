@@ -51,12 +51,18 @@ exports.getProducts = async (req, res) => {
 // Get product by ID
 exports.getProductById = async (req, res) => {
     try {
-        const { product_id } = req.params;
-        
-        const result = await pool.query('SELECT * FROM products WHERE product_id = $1', [product_id]);
+        const { productId } = req.params; 
+
+        const result = await pool.query(`
+            SELECT products.*, categories.category_name 
+            FROM products 
+            JOIN categories 
+            ON products.category_id = categories.category_id
+            WHERE products.product_id = $1
+        `, [productId]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({message: 'Product not found'});
+            return res.status(404).json({ message: 'Product not found' });
         }
 
         res.json(result.rows[0]);
