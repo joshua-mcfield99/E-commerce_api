@@ -5,7 +5,7 @@ const {
     updateCartItem,
     removeItemFromCart
 } = require('../controllers/cartController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ const router = express.Router();
  *       404:
  *         description: Cart not found.
  */
-router.get('/cart', authenticateToken, getCart);
+router.get('/', authenticateSession, getCart);
 
 // Add an item to the cart
 /**
@@ -50,7 +50,7 @@ router.get('/cart', authenticateToken, getCart);
  *       400:
  *         description: Invalid input.
  */
-router.post('/cart/items', authenticateToken, addItemToCart);
+router.post('/items', authenticateSession, addItemToCart);
 
 // Update an item's quantity in the cart
 /**
@@ -82,7 +82,7 @@ router.post('/cart/items', authenticateToken, addItemToCart);
  *       404:
  *         description: Cart item not found.
  */
-router.put('/cart/items/:cart_item_id', authenticateToken, updateCartItem);
+router.put('/items/:cart_item_id', authenticateSession, updateCartItem);
 
 // Remove an item from the cart
 /**
@@ -105,6 +105,6 @@ router.put('/cart/items/:cart_item_id', authenticateToken, updateCartItem);
  *       404:
  *         description: Cart item not found.
  */
-router.delete('/cart/items/:cart_item_id', authenticateToken, removeItemFromCart);
+router.delete('/items/:cart_item_id', authenticateSession, removeItemFromCart);
 
 module.exports = router;

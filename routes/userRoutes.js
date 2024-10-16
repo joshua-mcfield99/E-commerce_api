@@ -4,7 +4,7 @@ const {
     getUserById,
     updateUserById
 } = require('../controllers/userController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 const authUser = require('../middleware/authUser');
 const checkAdminRole = require('../middleware/adminMiddleware');
 
@@ -25,7 +25,7 @@ const router = express.Router();
  *       403:
  *         description: Access denied.
  */
-router.get('/users', authenticateToken, checkAdminRole, getAllUsers);
+router.get('/users', authenticateSession, checkAdminRole, getAllUsers);
 
 // Get user by ID - Admin or the user themselves
 /**
@@ -51,7 +51,7 @@ router.get('/users', authenticateToken, checkAdminRole, getAllUsers);
  *       404:
  *         description: User not found.
  */
-router.get('/users/:user_id', authenticateToken, authUser, getUserById);
+router.get('/users/:user_id', authenticateSession, authUser, getUserById);
 
 // Update user by ID - Admin or the user themselves
 /**
@@ -94,6 +94,6 @@ router.get('/users/:user_id', authenticateToken, authUser, getUserById);
  *       404:
  *         description: User not found.
  */
-router.put('/users/:user_id', authenticateToken, authUser, updateUserById);
+router.put('/users/:user_id', authenticateSession, authUser, updateUserById);
 
 module.exports = router;

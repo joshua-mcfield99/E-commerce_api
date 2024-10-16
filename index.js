@@ -41,8 +41,12 @@ app.options('*', (req, res) => {
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
+    saveUninitialized: false,  // Set to false to avoid storing empty sessions
+    cookie: {
+        secure: false,  // Set to true if using HTTPS
+        httpOnly: true,  // Prevents client-side JS from reading the cookie
+        maxAge: 1000 * 60 * 60 * 24  // 1-day session expiration
+    }
 }));
 
 // Initialize Passport middleware

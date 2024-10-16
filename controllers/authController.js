@@ -96,12 +96,15 @@ exports.resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await pool.query(
-            'UPDATE users SET password = $1, reset_password_token = NULL, reset_password_expires = NULL WHERE user_id = $2',
+            'UPDATE users SET password = $1, reset_password_token = NULL, reset_password_expires = NULL, password_reset_required = false WHERE user_id = $2',
             [hashedPassword, user.user_id]
         );
 
-        res.status(200).json({ message: 'Password has been reset successfully' });
+        console.log('User object before logging in:', user);  // Log the user object
+
+        res.status(200).json({ message: 'Password has been reset. Please log in again.', redirect: '/login' });
     } catch (error) {
+        console.error('Error resetting password:', error);  // Log the error
         res.status(500).json({ message: 'Error resetting password' });
     }
 };

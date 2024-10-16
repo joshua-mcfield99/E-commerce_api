@@ -4,7 +4,7 @@ const {
     getOrderDetails,
     deleteOrder
 } = require('../controllers/orderController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 const checkAdminRole = require('../middleware/adminMiddleware'); 
 
 const router = express.Router();
@@ -23,7 +23,7 @@ const router = express.Router();
  *       404:
  *         description: No orders found.
  */
-router.get('/orders', authenticateToken, getUserOrders);
+router.get('/orders', authenticateSession, getUserOrders);
 
 // Get details of a specific order
 /**
@@ -46,7 +46,7 @@ router.get('/orders', authenticateToken, getUserOrders);
  *       404:
  *         description: Order not found.
  */
-router.get('/orders/:order_id', authenticateToken, getOrderDetails);
+router.get('/orders/:order_id', authenticateSession, getOrderDetails);
 
 // Delete an order (Admin only)
 /**
@@ -72,6 +72,6 @@ router.get('/orders/:order_id', authenticateToken, getOrderDetails);
  *       404:
  *         description: Order not found.
  */
-router.delete('/orders/:order_id', authenticateToken, checkAdminRole, deleteOrder);
+router.delete('/orders/:order_id', authenticateSession, checkAdminRole, deleteOrder);
 
 module.exports = router;

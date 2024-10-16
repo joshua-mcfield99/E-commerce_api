@@ -14,9 +14,9 @@ exports.getCart = async (req, res) => {
 
         const cart = cartResult.rows[0];
 
-        // Retrieve items in the cart
+        // Retrieve items in the cart along with the product image URL
         const cartItemsResult = await pool.query(
-            `SELECT ci.cart_item_id, ci.product_id, p.name, p.description, p.price, ci.quantity, ci.total_price
+            `SELECT ci.cart_item_id, ci.product_id, p.name, p.description, p.price, ci.quantity, ci.total_price, p.image_url
             FROM cart_items ci
             JOIN products p ON ci.product_id = p.product_id
             WHERE ci.cart_id = $1`,

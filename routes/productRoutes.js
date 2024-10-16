@@ -6,7 +6,7 @@ const {
     updateProduct,
     deleteProduct
 } = require('../controllers/productController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 const checkAdminRole = require('../middleware/adminMiddleware');
 
 const router = express.Router();
@@ -43,7 +43,7 @@ const router = express.Router();
  *       403:
  *         description: Access denied.
  */
-router.post('/', authenticateToken, checkAdminRole, createProduct);
+router.post('/', authenticateSession, checkAdminRole, createProduct);
 
 // Get all products, optional filtering by category
 /**
@@ -123,7 +123,7 @@ router.get('/:productId', getProductById);
  *       404:
  *         description: Product not found.
  */
-router.put('/:productId', authenticateToken, checkAdminRole, updateProduct);
+router.put('/:productId', authenticateSession, checkAdminRole, updateProduct);
 
 // Delete a product by ID (Admin only)
 /**
@@ -149,6 +149,6 @@ router.put('/:productId', authenticateToken, checkAdminRole, updateProduct);
  *       404:
  *         description: Product not found.
  */
-router.delete('/:productId', authenticateToken, checkAdminRole, deleteProduct);
+router.delete('/:productId', authenticateSession, checkAdminRole, deleteProduct);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express');
 const { addAddress } = require('../controllers/addressController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -34,6 +34,6 @@ const router = express.Router();
  *       500:
  *         description: Server error.
  */
-router.post('/addresses', authenticateToken, addAddress);
+router.post('/addresses', authenticateSession, addAddress);
 
 module.exports = router;

@@ -67,30 +67,32 @@ router.post('/register', registerUser);
 
 // Login route using Passport for local strategy
 router.post('/login', (req, res, next) => {
+    console.log('Login route hit');
+    
     passport.authenticate('local', (err, user, info) => {
-        // If there was an error during authentication
         if (err) {
+            console.error('Error during authentication:', err);
             return res.status(500).json({ message: 'Server error. Please try again later.' });
         }
 
-        // If authentication fails (e.g., wrong credentials or no user found)
         if (!user) {
+            console.log('Login failed:', info ? info.message : 'Invalid credentials');
             return res.status(401).json({ message: info ? info.message : 'Login failed. Invalid credentials.' });
         }
 
-        // Manually log the user in
         req.logIn(user, (err) => {
             if (err) {
+                console.error('Error logging user in:', err);
                 return res.status(500).json({ message: 'Error logging in. Please try again later.' });
             }
 
-            // Send a success response along with the authenticated user
+            console.log('Login successful, user logged in:', user);
             return res.status(200).json({
                 message: 'Login successful',
-                user: req.user, // Send user details back if necessary
+                user: req.user,
             });
         });
-    })(req, res, next);  // Pass the request, response, and next to the middleware
+    })(req, res, next);
 });
 
 /**
@@ -116,16 +118,76 @@ router.get('/google/callback',
     async (req, res) => {
         const user = req.user;
 
+        console.log('OAuth callback: User found', user);  // Log the user found during OAuth
+
         // Check if password reset is required
         if (user.password_reset_required) {
+            console.log('User needs a password reset. Sending reset email.');
             await sendPasswordResetEmail(user);
-            return res.redirect(`http://localhost:3000/profile?passwordReset=true`);
+            return res.redirect('http://localhost:3000/profile?passwordReset=true');
         }
 
-        // No password reset required
+        // No password reset required, proceed to profile
+        console.log('Password reset not required. Redirecting to profile.');
         res.redirect('http://localhost:3000/profile');
     }
 );
+
+/**
+ * @swagger
+ * /api/auth/user:
+ *   get:
+ *     summary: Retrieve the current authenticated user
+ *     tags:
+ *       - Authentication
+ *     description: This route returns the current authenticated user's details if they are logged in.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the authenticated user's details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: integer
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     phone:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       401:
+ *         description: User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Not authenticated
+ */
+router.get('/user', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.status(200).json({ user: req.user });
+    } else {
+        res.status(401).json({ message: 'Not authenticated' });
+    }
+});
 
 /**
  * @swagger

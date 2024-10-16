@@ -1,6 +1,6 @@
 const express = require('express');
 const { checkout } = require('../controllers/checkoutController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -36,6 +36,6 @@ const router = express.Router();
  *       400:
  *         description: Checkout failed.
  */
-router.post('/cart/:cart_id/checkout', authenticateToken, checkout);
+router.post('/cart/:cart_id/checkout', authenticateSession, checkout);
 
 module.exports = router;

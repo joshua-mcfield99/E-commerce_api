@@ -5,7 +5,7 @@ const {
     getCategoryById,
     deleteCategory
 } = require('../controllers/categoryController');
-const authenticateToken = require('../middleware/authMiddleware');
+const authenticateSession = require('../middleware/authMiddleware');
 const checkAdminRole = require('../middleware/adminMiddleware');
 
 const router = express.Router();
@@ -34,7 +34,7 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  */
-router.post('/categories', authenticateToken, checkAdminRole, createCategory);
+router.post('/categories', authenticateSession, checkAdminRole, createCategory);
 
 /**
  * @swagger
@@ -99,6 +99,6 @@ router.get('/categories/:id', getCategoryById);
  *     security:
  *       - bearerAuth: []
  */
-router.delete('/categories/:id', authenticateToken, checkAdminRole, deleteCategory);
+router.delete('/categories/:id', authenticateSession, checkAdminRole, deleteCategory);
 
 module.exports = router;
