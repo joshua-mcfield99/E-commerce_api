@@ -17,6 +17,7 @@ const checkoutRoutes = require('./routes/checkoutRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const addressRoutes = require('./routes/addressRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const paymentsRoutes = require('./routes/paymentsRoutes');
 
 // Initialize app
 const app = express();
@@ -100,10 +101,14 @@ app.use('/api/checkout', checkoutRoutes);
 app.use('/api/orders', orderRoutes);
 
 // Address routes
-app.use('/api/address', addressRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // Category routes
 app.use('/api/categories', categoryRoutes);
+
+// Payment routes
+app.use('/api/payments', paymentsRoutes);
+
 
 /*
 // Test basic route

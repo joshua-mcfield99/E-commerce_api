@@ -34,6 +34,6 @@ const router = express.Router();
  *       500:
  *         description: Server error.
  */
-router.post('/addresses', authenticateSession, addAddress);
+router.post('/', authenticateSession, addAddress);
 
 module.exports = router;
