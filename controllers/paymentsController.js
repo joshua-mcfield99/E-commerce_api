@@ -10,10 +10,12 @@ exports.createPaymentIntent = async (req, res) => {
     }
 
     try {
+        console.log("Generating clientSecret for payment intent");
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency: "usd",
         });
+        console.log("Generated clientSecret:", paymentIntent.client_secret);
         res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error) {
         console.error("Error creating payment intent:", error);

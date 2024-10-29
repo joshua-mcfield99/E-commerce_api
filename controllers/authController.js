@@ -100,7 +100,7 @@ exports.resetPassword = async (req, res) => {
             [hashedPassword, user.user_id]
         );
 
-        console.log('User object before logging in:', user);  // Log the user object
+        //console.log('User object before logging in:', user);  // Log the user object
 
         res.status(200).json({ message: 'Password has been reset. Please log in again.', redirect: '/login' });
     } catch (error) {

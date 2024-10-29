@@ -23,7 +23,7 @@ const router = express.Router();
  *       404:
  *         description: No orders found.
  */
-router.get('/orders', authenticateSession, getUserOrders);
+router.get('/', authenticateSession, getUserOrders);
 
 // Get details of a specific order
 /**
@@ -46,7 +46,7 @@ router.get('/orders', authenticateSession, getUserOrders);
  *       404:
  *         description: Order not found.
  */
-router.get('/orders/:order_id', authenticateSession, getOrderDetails);
+router.get('/:order_id', authenticateSession, getOrderDetails);
 
 // Delete an order (Admin only)
 /**
@@ -72,6 +72,6 @@ router.get('/orders/:order_id', authenticateSession, getOrderDetails);
  *       404:
  *         description: Order not found.
  */
-router.delete('/orders/:order_id', authenticateSession, checkAdminRole, deleteOrder);
+router.delete('/:order_id', authenticateSession, checkAdminRole, deleteOrder);
 
 module.exports = router;
