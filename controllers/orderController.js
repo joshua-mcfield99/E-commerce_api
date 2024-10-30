@@ -26,11 +26,13 @@ exports.getOrderDetails = async (req, res) => {
         const { user_id } = req.user;
         const { order_id } = req.params;
 
-        // Check if the order belongs to the user
+        // Query to fetch order details and join with addresses table using address_id
         const orderResult = await pool.query(
-            `SELECT order_id, order_date, total_price, total_items, payment_status, address_id 
-             FROM orders 
-             WHERE user_id = $1 AND order_id = $2`,
+            `SELECT o.order_id, o.order_date, o.total_price, o.total_items, o.payment_status,
+                    a.name, a.street, a.city, a.state, a.country, a.postal_code
+             FROM orders o
+             LEFT JOIN addresses a ON o.address_id = a.address_id
+             WHERE o.user_id = $1 AND o.order_id = $2`,
             [user_id, order_id]
         );
 
@@ -49,7 +51,23 @@ exports.getOrderDetails = async (req, res) => {
             [order.order_id]
         );
 
+        // Add order items and address details to the order response
         order.items = orderItemsResult.rows;
+        order.address = {
+            name: order.name, 
+            street: order.street,
+            city: order.city,
+            state: order.state,
+            country: order.country,
+            postal_code: order.postal_code,
+        };
+
+        // Clean up the unnecessary address fields from order object if you have included them in a nested address
+        delete order.street;
+        delete order.city;
+        delete order.state;
+        delete order.country;
+        delete order.postal_code;
 
         res.status(200).json(order);
     } catch (err) {
