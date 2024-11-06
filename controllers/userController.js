@@ -96,3 +96,48 @@ exports.updateUserById = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Get user profile with addresses and orders
+exports.getUserProfile = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+
+        // Fetch user details
+        const userResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [user_id]);
+        const user = userResult.rows[0];
+
+        // Fetch addresses
+        const addressesResult = await pool.query('SELECT * FROM addresses WHERE user_id = $1', [user_id]);
+        const addresses = addressesResult.rows;
+
+        // Fetch orders with items joined with products
+        const ordersResult = await pool.query(`
+            SELECT 
+                o.order_id, 
+                o.order_date, 
+                o.total_price, 
+                o.total_items, 
+                o.payment_status, 
+                json_agg(json_build_object(
+                    'order_items_id', oi.order_items_id,
+                    'product_id', oi.product_id,
+                    'product_name', p.name,
+                    'quantity', oi.quantity,
+                    'price', oi.total_price
+                )) AS items
+            FROM orders o
+            LEFT JOIN order_items oi ON o.order_id = oi.order_id
+            LEFT JOIN products p ON oi.product_id = p.product_id
+            WHERE o.user_id = $1
+            GROUP BY o.order_id;
+        `, [user_id]);
+
+        const orders = ordersResult.rows;
+
+        // Send the combined user profile data
+        res.status(200).json({ user, addresses, orders });
+    } catch (err) {
+        console.error('Error fetching profile data:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

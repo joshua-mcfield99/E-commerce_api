@@ -2,7 +2,8 @@ const express = require('express');
 const {
     getAllUsers,
     getUserById,
-    updateUserById
+    updateUserById,
+    getUserProfile
 } = require('../controllers/userController');
 const authenticateSession = require('../middleware/authMiddleware');
 const authUser = require('../middleware/authUser');
@@ -95,5 +96,23 @@ router.get('/users/:user_id', authenticateSession, authUser, getUserById);
  *         description: User not found.
  */
 router.put('/users/:user_id', authenticateSession, authUser, updateUserById);
+
+// Get the profile of the authenticated user
+/**
+ * @swagger
+ * /api/users/profile:
+ *   get:
+ *     summary: Retrieve the profile of the authenticated user, including addresses and orders.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: User profile with addresses and orders.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Server error.
+ */
+router.get('/profile', authenticateSession, getUserProfile);
 
 module.exports = router;
